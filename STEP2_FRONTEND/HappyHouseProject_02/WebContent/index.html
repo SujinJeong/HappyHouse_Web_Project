@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="zxx">
+<head>
+<meta charset="utf-8">
+<title>Happy House | 메인화면</title>
+<meta name="description" content="The Project a Bootstrap-based, Responsive HTML5 Template">
+<meta name="author" content="author">
+<!-- Mobile Meta -->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Favicon -->
+<link rel="shortcut icon" href="images/favicon.ico">
+<!-- Web Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Raleway:300,400,700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
+<!-- Bootstrap core CSS -->
+<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Font Awesome CSS -->
+<link href="fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+<!-- Plugins -->
+<!-- Plugins -->
+<link href="plugins/magnific-popup/magnific-popup.css" rel="stylesheet">
+<link href="css/animations.css" rel="stylesheet">
+<link href="plugins/slick/slick.css" rel="stylesheet">
+
+<!-- The Project's core CSS file -->
+<!-- Use css/rtl_style.css for RTL version -->
+<link href="css/style.css" rel="stylesheet">
+<!-- The Project's Typography CSS file, includes used fonts -->
+<!-- Used font for body: Roboto -->
+<!-- Used font for headings: Raleway -->
+<!-- Use css/rtl_typography-default.css for RTL version -->
+<link href="css/typography-default.css" rel="stylesheet">
+<!-- Color Scheme (In order to change the color scheme, replace the blue.css with the color scheme that you prefer) -->
+<link href="css/skins/light_blue.css" rel="stylesheet">
+
+
+<!-- Custom css -->
+<link href="css/custom.css" rel="stylesheet">
+<script type="text/javascript" src='js/jquery-3.3.1.js'></script>
+<script src="https://code.jquery.com/jquery-latest.min.js" type="application/javascript"></script>
+<script type="text/javascript" src="./js/hangjungdong.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=API키" async defer></script>
+<script type="text/javascript" src="./js/join.js"></script>
+<script type="text/javascript">
+	//https://console.developers.google.com    key받기 위한 site
+
+	var locations = [];
+
+	locations = [ [ '도봉구', 37.6658609, 127.0317674 ],
+			[ '은평구', 37.6176125, 126.9227004 ],
+			[ '동대문구', 37.5838012, 127.0507003 ],
+			[ '동작구', 37.4965037, 126.9443073 ],
+			[ '금천구', 37.4600969, 126.9001546 ],
+			[ '구로구', 37.4954856, 126.858121 ],
+			[ '종로구', 37.5990998, 126.9861493 ],
+			[ '강북구', 37.6469954, 127.0147158 ],
+			[ '중랑구', 37.5953795, 127.0939669 ],
+			[ '강남구', 37.4959854, 127.0664091 ],
+			[ '강서구', 37.5657617, 126.8226561 ],
+			[ '중구', 37.5579452, 126.9941904 ],
+			[ '강동구', 37.5492077, 127.1464824 ],
+			[ '광진구', 37.5481445, 127.0857528 ],
+			[ '마포구', 37.5622906, 126.9087803 ],
+			[ '서초구', 37.4769528, 127.0378103 ],
+			[ '성북구', 37.606991, 127.0232185 ],
+			[ '노원구', 37.655264, 127.0771201 ],
+			[ '송파구', 37.5048534, 127.1144822 ],
+			[ '서대문구', 37.5820369, 126.9356665 ],
+			[ '양천구', 37.5270616, 126.8561534 ],
+			[ '영등포구', 37.520641, 126.9139242 ],
+			[ '관악구', 37.4653993, 126.9438071 ],
+			[ '성동구', 37.5506753, 127.0409622 ],
+			[ '용산구', 37.5311008, 126.9810742 ] ];
+
+	var map = null;
+	var latitude;
+	var longitude;
+
+	var lat = 37.606991
+	var lng = 127.0232185
+	var zoom = 11
+
+	function initMap() {
+		//getLocation();
+		var opt = {
+			// google map에 중앙으로 표시할 좌표 설정
+			center : {
+				lat : lat,
+				lng : lng
+			},
+			zoom : zoom, //0~ 21  큰 값일 수록  zooming
+		};
+		//google.maps.Map(map을 그릴 영역, 옵션정보 );
+		map = new google.maps.Map(document.getElementById("map"), opt);
+
+		var infowindow = new google.maps.InfoWindow();
+
+		var marker, i;
+		for (i = 0; i < locations.length; i++) {
+			marker = new google.maps.Marker({
+				id : i,
+				title : locations[i][0],
+				label : locations[i][0],
+				position : new google.maps.LatLng(locations[i][1],
+						locations[i][2]),
+				map : map
+			});
+
+			google.maps.event.addListener(marker, 'click',
+					(function(marker, i) {
+						return function() {
+							infowindow.setContent(locations[i][0]);
+							infowindow.open(map, marker);
+						}
+					})(marker, i));
+			if (marker) {
+				marker.addListener('click', function() {
+					console.log(this.title);
+					map.setZoom(15);
+					map.panTo(this.getPosition());
+				});
+			}
+		}
+	}
+
+	/// 현재 위치를 최초위치로.
+
+	function showLocation(position) {
+		latitude = position.coords.latitude;
+		longitude = position.coords.longitude;
+		//alert("Latitude : " + latitude + " Longitude: " + longitude);
+		//현재 위치 정보를 center로 지정하기 위해 객체 생성
+		var hear = new google.maps.LatLng(latitude, longitude);
+		map.panTo(hear); //위치 정보를 통해 맵에 표시 
+
+		/* 	
+			for (var i = 0; i < results.features.length; i++) {
+		var coords = results.features[i].geometry.coordinates;
+		var latLng = new google.maps.LatLng(coords[1],coords[0]);
+		var marker = new google.maps.Marker({
+		position: latLng,
+		map: map
+		});
+		}
+		 */
+		/* 	//맵에서 위치 표시하기 위한 정보 
+			var marker = new google.maps.Marker({
+			    position: hear,
+			    title:"I'm hear!",
+			    map: map
+			}); */
+
+	}
+
+	function errorHandler(err) {
+		if (err.code == 1) {
+			alert("Error: Access is denied!");
+		} else if (err.code == 2) {
+			alert("Error: Position is unavailable!");
+		} else if (err.code == 3) {
+			alert("Erro : Time out");
+		}
+	}
+	function getLocation() {
+		if (navigator.geolocation) {
+			var options = {
+				timeout : 60000,
+				enabledHighAccuracy : true
+			};
+			navigator.geolocation.getCurrentPosition(showLocation,
+					errorHandler, options);
+		} else {
+			alert("Sorry, browser does not support geolocation!");
+		}
+	}
+</script>
+</head>
+
+<!-- body classes:  -->
+<!-- "boxed": boxed layout mode e.g. <body class="boxed"> -->
+<!-- "pattern-1 ... pattern-9": background patterns for boxed layout mode e.g. <body class="boxed pattern-1"> -->
+<!-- "transparent-header": makes the header transparent and pulls the banner to top -->
+<!-- "gradient-background-header": applies gradient background to header -->
+<!-- "page-loader-1 ... page-loader-6": add a page loader to the page (more info @components-page-loaders.html) -->
+<body class=" ">
+
+  <!-- scrollToTop -->
+  <!-- ================ -->
+  <div class="scrollToTop circle">
+    <i class="fa fa-angle-up"></i>
+  </div>
+
+  <!-- page wrapper start -->
+  <!-- ================ -->
+  <div class="page-wrapper">
+    <!-- header-container end -->
+
+
+
+    <!-- header-container start -->
+    <div class="header-container">
+      <!-- header-top start -->
+      <!-- classes:  -->
+      <!-- "dark": dark version of header top e.g. class="header-top dark" -->
+      <!-- "colored": colored version of header top e.g. class="header-top colored" -->
+      <!-- ================ -->
+      <div class="header-top dark">
+        <div class="container">
+          <div class="row">
+            <div class="col-3 col-sm-6 col-lg-9">
+              <!-- header-top-first start -->
+              <!-- ================ -->
+              <div class="header-top-first clearfix"></div>
+              <!-- header-top-first end -->
+            </div>
+            <div class="col-9 col-sm-6 col-lg-3">
+
+              <!-- header-top-second start -->
+              <!-- ================ -->
+              <div id="header-top-second" class="clearfix">
+
+                <!-- header top dropdowns start -->
+                <!-- ================ -->
+                <div class="header-top-dropdown text-right">
+
+                  <div class="btn-group">
+                    <a href="./signUpForm.html" class="btn btn-default btn-sm"><i class="fa fa-user pr-2"></i> Sign Up</a>
+                  </div>
+                  <div class="btn-group" id="login">
+                    <button id="header-top-drop-2" type="button" class="btn dropdown-toggle btn-default btn-sm dropdown-toggle--no-caret" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa fa-lock pr-2"></i> Login
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right dropdown-animation" aria-labelledby="header-top-drop-2">
+                      <li>
+
+
+                        <form class="login-form margin-clear">
+                          <div class="form-group has-feedback">
+                            <label class="control-label">아 이 디</label> <input type="text" id="loginId" class="form-control" placeholder="" name="id"> <i class="fa fa-user form-control-feedback"></i>
+                          </div>
+                          <div class="form-group has-feedback">
+                            <label class="control-label">비밀번호</label> <input type="password" id="loginPw" class="form-control" placeholder="" name="pw"> <i class="fa fa-lock form-control-feedback"></i>
+                          </div>
+                          <button type="button" id="login-btn" class="btn btn-gray btn-sm">로 그 인</button>
+
+                          <ul class='pagination'>
+                            <!--
+                                          <li><a href="#" class="btn btn-default btn-sm">아이디
+                                                찾기</a></li>
+                                          -->
+                            <li><a href="passwordSearchForm.do" class="btn btn-default btn-sm">비밀번호 찾기</a></li>
+                          </ul>
+
+                        </form>
+                      </li>
+                    </ul>
+                  </div>
+                  <div id="logout" style="display: none;">
+                    <div id="logInfo" class="btn btn-outline-white text-danger p-0" style="background-color: black"></div>
+                    <button type="button" id="logout-btn" class="btn btn-outline-white text-danger p-0">LogOut</button>
+                  </div>
+
+                </div>
+                <!--  header top dropdowns end -->
+              </div>
+              <!-- header-top-second end -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- header-top end -->
+
+      <!-- header start -->
+      <!-- classes:  -->
+      <!-- "fixed": enables fixed navigation mode (sticky menu) e.g. class="header fixed clearfix" -->
+      <!-- "fixed-desktop": enables fixed navigation only for desktop devices e.g. class="header fixed fixed-desktop clearfix" -->
+      <!-- "fixed-all": enables fixed navigation only for all devices desktop and mobile e.g. class="header fixed fixed-desktop clearfix" -->
+      <!-- "dark": dark version of header e.g. class="header dark clearfix" -->
+      <!-- "centered": mandatory class for the centered logo layout -->
+      <!-- ================ -->
+      <header class="header fixed fixed-desktop clearfix">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-auto hidden-md-down">
+              <!-- header-first start -->
+              <!-- ================ -->
+              <div class="header-first clearfix">
+
+                <!-- logo -->
+                <div id="logo" class="logo">
+                  <a href="./index.html"><img id="logo_img" src="images/logo.jpg" width='150' alt="The SSAFY"></a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-10 ml-auto">
+
+              <!-- header-second start -->
+              <!-- ================ -->
+              <div class="header-second clearfix">
+
+                <!-- main-navigation start -->
+                <!-- classes: -->
+                <!-- "onclick": Makes the dropdowns open on click, this the default bootstrap behavior e.g. class="main-navigation onclick" -->
+                <!-- "animated": Enables animations on dropdowns opening e.g. class="main-navigation animated" -->
+                <!-- ================ -->
+                <div class="main-navigation main-navigation--mega-menu  animated">
+                  <nav class="navbar navbar-expand-lg navbar-light p-0">
+                    <div class="navbar-brand clearfix hidden-lg-up">
+
+                      <!-- logo -->
+                      <div id="logo-mobile" class="logo">
+                        <a href="./index.html"><img id="logo-img-mobile" src="images/logo.jpg" width='150' alt="The SSAFY"></a>
+
+                      </div>
+
+                    </div>
+
+                    <!-- header dropdown buttons -->
+                    <div class="header-dropdown-buttons hidden-lg-up p-0 ml-auto mr-3">
+                      <div class="btn-group">
+                        <button type="button" class="btn dropdown-toggle dropdown-toggle--no-caret" id="header-drop-3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fa fa-search"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right dropdown-animation" aria-labelledby="header-drop-3">
+                          <li>
+                            <form role="search" class="search-box margin-clear">
+                              <div class="form-group has-feedback">
+                                <input type="text" class="form-control" placeholder="Search"> <i class="fa fa-search form-control-feedback"></i>
+                              </div>
+                            </form>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <!-- header dropdown buttons end -->
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse-1" aria-controls="navbar-collapse-1" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                      <ul class="navbar-nav ml-xl-auto">
+                        <li class="nav-item dropdown  mega-menu mega-menu--wide"><a href="./noticeList.html" class="nav-link " id="first-dropdown" aria-haspopup="true" aria-expanded="false">공지사항</a></li>
+                        <li class="nav-item dropdown mega-menu mega-menu--wide">
+                          <!-- <a href="foodBestList.do?id=n" class="nav-link dropdown-toggle" id="second-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">영양 정보</a> --> <a href="./news.html" class="nav-link" id="second-dropdown" aria-haspopup="true" aria-expanded="false">오늘의 뉴스</a>
+                        </li>
+
+
+
+                      </ul>
+                      <!-- main-menu end -->
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- header end -->
+    </div>
+
+    <!-- header-second end -->
+
+
+    <!-- banner start -->
+    <!-- ================ -->
+
+    <div class="banner dark-translucent-bg" style="background-image: url('images/mainbg1.jpg'); background-position: 50% 32%;">
+      <!-- breadcrumb end -->
+      <div class="container">
+        <div class="row justify-content-lg-center">
+          <div class="col-lg-8 text-center pv-20">
+            <h2 class="title hc-element-invisible" data-animation-effect="fadeIn" data-effect-delay="100">
+              <strong>Happy House</strong>
+            </h2>
+            <div class="separator hc-element-invisible mt-10" data-animation-effect="fadeIn" data-effect-delay="100"></div>
+            <p class="text-center hc-element-invisible" data-animation-effect="fadeIn" data-effect-delay="100">행복한 우리 집</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- banner end -->
+
+
+
+    <div class="dark-bg section">
+      <div class="container-fluid">
+        <!-- filters start -->
+        <div class="sorting-filters text-center mb-20 d-flex justify-content-center">
+          <form class="form-inline" id="frm" action="searchRecentHouseDeal.do">
+            <div class="form-group md">
+              <select class="form-control" name="city" id="city">
+                <option value="">선택</option>
+              </select>
+            </div>
+            <div class="form-group md-1">
+              <select class="form-control" name="gu" id="gu">
+                <option value="">선택</option>
+              </select>
+            </div>
+            <div class="form-group md-1">
+              <select class="form-control" name="dong" id="dong">
+                <option value="">선택</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <!-- filters end -->
+      </div>
+    </div>
+    <!-- main-container start -->
+    <!-- ================ -->
+    <section class="main-container">
+      <div class="container">
+        <div class="row">
+          <!-- main start -->
+          <!-- ================ -->
+          <div class="main col-12">
+            <!-- =======상품 정보  시작   반복 시작  ========= -->
+            <div class="row grid-space-10">
+              <div class='col-12 justify-content-center' id="map" style="width: 800px; height: 400px"></div>
+            </div>
+
+            <!-- =======상품 정보  종료  반복 종료  ========= -->
+            <div class="separator-2"></div>
+            <!-- ======= 부가 화면 서비스   ========= -->
+            <div class="row grid-space-10">
+              <div class='col-md-4'>
+                <img src='images/sideAD.jpg'>
+              </div>
+              <div class="col-md-4">
+                <h3 class="title">주택 관련 기사</h3>
+                <div class="separator-2"></div>
+                <ul class="nav flex-column list-style-icons">
+
+                  <li class="nav-item"><a class="nav-link " href="news.do?arti_id=3" title="<인사> 신동아건설"><인사> 신동아건설</a></li>
+
+                  <li class="nav-item"><a class="nav-link " href="news.do?arti_id=4" title="12.16 대책 후 ‘매수·매도자 모두 일단 관망세’">12.16 대책 후 ‘매수·매도자 모두 일단 관망세’</a></li>
+
+                  <li class="nav-item"><a class="nav-link " href="news.do?arti_id=5" title="구미시, 낙동강 변 국가3산단에 민간공원 조성">구미시, 낙동강 변 국가3산단에 민간공원 조성</a></li>
+
+                  <li class="nav-item"><a class="nav-link " href="news.do?arti_id=33" title="‘은행’과 ‘보험사’의 주택담보대출 조건, 어떻게 다를까?">‘은행’과 ‘보험사’의 주택담보대출 조건, 어떻게 다를까?</a></li>
+
+                </ul>
+                <div class="separator-2"></div>
+              </div>
+              <div class="col-md-4">
+                <h3 class="title">오늘의 뉴스</h3>
+                <div class="separator-2"></div>
+                <ul>
+
+                  <li><a href="news.do?arti_id=47" class="small margin-clear" title="KB국민은행, ‘디지털헌금바구니’ 출시">KB국민은행, ‘디지털헌금바구니’ 출시</a></li>
+
+                  <li><a href="news.do?arti_id=46" class="small margin-clear" title="존슨콘트롤즈, OpenBlue 공개 “135년 쌓아온 빌딩 전문성과 최첨단 기술 결합”">존슨콘트롤즈, OpenBlue 공개 “135년 쌓아온 빌딩 전문성과 최첨단 기술 결합”</a></li>
+
+                  <li><a href="news.do?arti_id=45" class="small margin-clear" title="산업통상자원부, 업종별 비대면·온라인 수출 기반 본격 가동">산업통상자원부, 업종별 비대면·온라인 수출 기반 본격 가동</a></li>
+
+                  <li><a href="news.do?arti_id=44" class="small margin-clear" title="장상인 대표, 제6회 INAK사회공헌대상 프레스클럽부문 ‘시민봉사대상’ 수상">장상인 대표, 제6회 INAK사회공헌대상 프레스클럽부문 ‘시민봉사대상’ 수상</a></li>
+
+                  <li><a href="news.do?arti_id=43" class="small margin-clear" title="삼성전자, 한샘과 공동사업 강화 위한 업무협약 체결">삼성전자, 한샘과 공동사업 강화 위한 업무협약 체결</a></li>
+
+                </ul>
+
+              </div>
+
+
+            </div>
+            <!-- =======상품 정보  종료  반복 종료  ========= -->
+            <!-- pagination start -->
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+
+              </ul>
+            </nav>
+
+            <!-- pagination end -->
+
+          </div>
+          <!-- main end -->
+
+        </div>
+      </div>
+    </section>
+    <!-- main-container end -->
+
+    <!-- main-container end -->
+
+    <!-- footer start (Add "dark" class to #footer in order to enable dark footer) -->
+    <!-- ================ -->
+    <footer id="footer" class="clearfix ">
+
+      <!-- .footer start -->
+      <!-- ================ -->
+      <div class="footer">
+        <div class="container">
+          <div class="footer-inner">
+            <div class="row">
+              <div class="col-md-1">
+                <div class="footer-content">
+                  <img alt="" src="images/logo.png" width="150">
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="footer-content">
+                  <h2 class="title">Find Us</h2>
+                  <div class="separator-2"></div>
+                  <ul class="list-icons">
+                    <li><i class="fa fa-map-marker pr-2 text-default"></i>(SSAFY) 서울시 강남구 테헤란로 멀티스퀘어</li>
+                    <li><i class="fa fa-phone pr-2 text-default"></i> 1544-9001</li>
+                    <li><a href="#"><i class="fa fa-envelope-o pr-2"></i>admin@ssafy.com</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- .footer end -->
+
+      <!-- .subfooter start -->
+      <!-- ================ -->
+      <div class="subfooter">
+        <div class="container">
+          <div class="subfooter-inner">
+            <div class="row">
+              <div class="col-md-12">
+                <p class="text-center">Copyright by SSAFY. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- .subfooter end -->
+
+    </footer>
+    <!-- footer end -->
+  </div>
+  <!-- page-wrapper end -->
+
+  <!-- JavaScript files placed at the end of the document so the pages load faster -->
+  <!-- ================================================== -->
+  <!-- Jquery and Bootstap core js files -->
+  <script src="plugins/jquery.min.js"></script>
+  <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Isotope javascript -->
+  <script src="plugins/isotope/imagesloaded.pkgd.min.js"></script>
+  <script src="plugins/isotope/isotope.pkgd.min.js"></script>
+
+  <!-- Magnific Popup javascript -->
+  <script src="plugins/magnific-popup/jquery.magnific-popup.min.js"></script>
+  <!-- Appear javascript -->
+  <script src="plugins/waypoints/jquery.waypoints.min.js"></script>
+  <script src="plugins/waypoints/sticky.min.js"></script>
+  <!-- Count To javascript -->
+  <script src="plugins/countTo/jquery.countTo.js"></script>
+  <!-- Slick carousel javascript -->
+  <script src="plugins/slick/slick.min.js"></script>
+  <!-- Initialization of Plugins -->
+  <script src="js/template.js"></script>
+  <!-- Custom Scripts -->
+  <script src="js/custom.js"></script>
+
+</body>
+</html>

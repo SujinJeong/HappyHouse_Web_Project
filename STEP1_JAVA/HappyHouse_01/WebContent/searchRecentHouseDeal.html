@@ -1,0 +1,797 @@
+
+
+
+<html dir="ltr" lang="zxx">
+<head>
+<meta charset="utf-8">
+<title>Happy House | House Search</title>
+<meta name="description" content="The Project a Bootstrap-based, Responsive HTML5 Template">
+<meta name="author" content="author">
+<!-- Mobile Meta -->
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Favicon -->
+<link rel="shortcut icon" href="images/favicon.ico">
+<!-- Web Fonts -->
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,500,500i,700,700i" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Raleway:300,400,700" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet">
+<!-- Bootstrap core CSS -->
+<link href="bootstrap/css/bootstrap.css" rel="stylesheet">
+<!-- Font Awesome CSS -->
+<link href="fonts/font-awesome/css/font-awesome.css" rel="stylesheet">
+<link href="plugins/magnific-popup/magnific-popup.css" rel="stylesheet">
+<link href="css/animations.css" rel="stylesheet">
+<link href="plugins/slick/slick.css" rel="stylesheet">
+<link href="css/style.css" rel="stylesheet">
+<link href="css/skins/light_blue.css" rel="stylesheet">
+<script type="text/javascript" src='js/jquery-3.3.1.js'></script>
+<script type="text/javascript" src="./js/hangjungdong.js"></script>
+<script src="js/custom.js"></script>
+<script src='./js/join.js'></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA5YTnVSkzxxAHB_4StOHKVfxQscmrKY-I&callback=initMap" async defer></script>
+<script type="text/javascript">
+	var Request = function() {
+		this.getParameter = function(name) {
+			var rtnval = '';
+			var nowAddress = unescape(location.href);
+			var parameters = (nowAddress.slice(nowAddress.indexOf('?') + 1,
+					nowAddress.length)).split('&');
+			for (var i = 0; i < parameters.length; i++) {
+				var varName = parameters[i].split('=')[0];
+				if (varName.toUpperCase() == name.toUpperCase()) {
+					rtnval = parameters[i].split('=')[1];
+					break;
+				}
+			}
+			return rtnval;
+		}
+	}
+	var request = new Request();
+	var paramCity = request.getParameter('city');
+	var paramGu = request.getParameter('gu');
+	var paramDong = request.getParameter('dong')
+	var locations = [];
+
+	locations.push([ '    27,000', 37.5512094, 126.9751691, "뉴후암",
+			"images/house.jpg" ])
+
+	locations.push([ '    69,000', 37.5491552, 126.9788322, "명남아띠팰리스",
+			"images/house.jpg" ])
+
+	locations.push([ '   133,000', 37.55121870000001, 126.9762396, "브라운스톤남산",
+			"images/house.jpg" ])
+
+	locations.push([ '    84,000', 37.5493916, 126.9755414, "삼안리치10차",
+			"images/house.jpg" ])
+
+	locations.push([ '    86,000', 37.5482831, 126.9743695, "삼안리치8차",
+			"images/house.jpg" ])
+
+	locations.push([ '    64,900', 37.5493644, 126.9802078, "신주에지앙",
+			"images/house.jpg" ])
+
+	locations.push([ '    30,200', 37.549795, 126.9778016, "신후암",
+			"images/house.jpg" ])
+
+	locations.push([ '    78,500', 37.5496737, 126.97909, "프리마베라빌",
+			"images/house.jpg" ])
+
+	locations.push([ '    81,500', 37.5485522, 126.9791166, "화인",
+			"images/house.jpg" ])
+
+	locations.push([ '    62,000', 37.549149, 126.9780096, "후암",
+			"images/house.jpg" ])
+
+	locations.push([ '    38,000', 37.5522206, 126.9770713, "후암맨션",
+			"images/house.jpg" ])
+
+	locations.push([ '    74,000', 37.5518011, 126.9757608, "후암미주",
+			"images/house.jpg" ])
+
+	locations.push([ '    85,000', 37.5493423, 126.9783793, "힐튼빌리지2차",
+			"images/house.jpg" ])
+
+	var map = null;
+	var latitude;
+	var longitude;
+
+	$(function() {
+
+		if (paramCity) {
+			console.log(paramCity);
+			$('#city').val(paramCity).prop('selected', true);
+			jQuery('#gu').show();
+			jQuery('#gu').empty();
+			jQuery('#gu').append(fn_option('', '선택')); //
+			jQuery.each(hangjungdong.sigugun, function(idx, code) {
+				if (jQuery('#city > option:selected').val() == code.sido)
+					jQuery('#gu').append(fn_option(code.sigugun, code.codeNm));
+			});
+		}
+		if (paramGu) {
+			$('#gu').val(paramGu).prop('selected', true);
+			jQuery('#dong').empty();
+			jQuery
+					.each(
+							hangjungdong.dong,
+							function(idx, code) {
+								if (jQuery('#city > option:selected').val() == code.sido
+										&& jQuery('#gu > option:selected')
+												.val() == code.sigugun)
+									jQuery('#dong').append(
+											fn_option(code.dong, code.codeNm));
+							});
+			//option의 맨앞에 추가
+			jQuery('#dong').prepend(fn_option('', '선택'));
+			//option중 선택을 기본으로 선택
+			jQuery('#dong option:eq("")').attr('selected', 'selected');
+		}
+
+		if (paramDong) {
+			$("#dong").val(paramDong).prop('selected', true)
+		}
+	})
+
+	///////////////////////////////////////////////////맵 설정
+	function initMap() {
+		getLocation();
+		var opt = {
+			// google map에 중앙으로 표시할 좌표 설정
+			center : {
+				lat : 37.5498915,
+				lng : 126.9814212
+			},
+			zoom : 15, //0~ 21  큰 값일 수록  zooming
+		};
+		//google.maps.Map(map을 그릴 영역, 옵션정보 );
+		map = new google.maps.Map(document.getElementById("map"), opt);
+
+		var infowindow = new google.maps.InfoWindow();
+
+		var marker, i;
+		for (i = 0; i < locations.length; i++) {
+			marker = new google.maps.Marker({
+				id : i,
+				title : locations[i][3],
+				label : locations[i][0],
+				//icon : locations[i][4],
+				position : new google.maps.LatLng(locations[i][1],
+						locations[i][2]),
+				map : map
+			});
+
+			google.maps.event.addListener(marker, 'click',
+					(function(marker, i) {
+						return function() {
+							infowindow.setContent("<center>[" + locations[i][3]
+									+ "]<br>거래가 : " + locations[i][0]
+									+ "만원</center>");
+							infowindow.open(map, marker);
+						}
+					})(marker, i));
+			if (marker) {
+				marker.addListener('click', function() {
+
+					$.ajax({
+						url : 'searchAllHouseDeal.do',
+						data : {
+							dongcode : '11170',
+							aptname : this.title,
+						},
+						dataType : 'json',
+						success : processSearchAptResult,
+						error : function(err) {
+							console.log(err);
+						}
+					})
+					console.log('title:', this.title);
+					console.log('lable:', this.label);
+					map.setZoom(16);
+					map.panTo(this.getPosition());
+				});
+			}
+		}
+	}
+
+	function processSearchAptResult(jsondata, status, xhr) {
+		var type = [ '', '아파트 매매', '아파트 전월세', '다세대 매매', '다세대 전월세' ];
+		console.log('결과 도착')
+		var list = jsondata;
+		console.log(list)
+		var contents = $('#houseInfo');
+		contents.empty(); //기존에 내용이 있으면 비우기
+		$(
+				'<h3 class="title">거래 정보</h3><div class="separator-2"></div><h5>'
+						+ list[0].aptName + '</h5><hr>').appendTo(contents);
+		$
+				.each(
+						list,
+						function(index, item) {
+							var html = '<div class="media margin-clear"><div class="media-body">'
+							html += '<h6 class="media-heading">거래금액 :'
+									+ item.dealAmount + '</h6>'
+							html += '<h6 class="media-heading">전용면적: '
+									+ item.area + '</h6>'
+							html += '<h6 class="media-heading">거래구분 :'
+									+ type[item.type] + '</h6>'
+							html += '<p class="small margin-clear"><i class="fa fa-calendar pr-10"></i>'
+									+ item.dealYear
+									+ '.'
+									+ item.dealMonth
+									+ '.' + item.dealDay + '</p><hr>'
+							$(html).appendTo(contents)
+						})
+	}
+
+	/// 현재 위치를 최초위치로.
+
+	function showLocation(position) {
+		latitude = position.coords.latitude;
+		longitude = position.coords.longitude;
+		//alert("Latitude : " + latitude + " Longitude: " + longitude);
+		//현재 위치 정보를 center로 지정하기 위해 객체 생성
+		var hear = new google.maps.LatLng(latitude, longitude);
+		map.panTo(hear); //위치 정보를 통해 맵에 표시 
+
+		for (var i = 0; i < results.features.length; i++) {
+			var coords = results.features[i].geometry.coordinates;
+			var latLng = new google.maps.LatLng(coords[1], coords[0]);
+			var marker = new google.maps.Marker({
+				position : latLng,
+				map : map
+			});
+		}
+
+		//맵에서 위치 표시하기 위한 정보 
+		var marker = new google.maps.Marker({
+			position : hear,
+			title : "I'm hear!",
+			map : map
+		});
+
+	}
+
+	function errorHandler(err) {
+		if (err.code == 1) {
+			alert("Error: Access is denied!");
+		} else if (err.code == 2) {
+			alert("Error: Position is unavailable!");
+		} else if (err.code == 3) {
+			alert("Erro : Time out");
+		}
+	}
+	function getLocation() {
+		if (navigator.geolocation) {
+			var options = {
+				timeout : 60000,
+				enabledHighAccuracy : true
+			};
+			navigator.geolocation.getCurrentPosition(showLocation,
+					errorHandler, options);
+		} else {
+			alert("Sorry, browser does not support geolocation!");
+		}
+	}
+
+	function moveMap(Lat, Lon, Zoomlevel) {
+		map.setZoom(15);
+		setTimeout(function() {
+			var moveLatLon = new google.maps.LatLng(Lat, Lon);
+			map.panTo(moveLatLon);
+			map.setZoom(Zoomlevel);
+		}, 1000);
+	};
+</script>
+</head>
+
+<!-- body classes:  -->
+<!-- "boxed": boxed layout mode e.g. <body class="boxed"> -->
+<!-- "pattern-1 ... pattern-9": background patterns for boxed layout mode e.g. <body class="boxed pattern-1"> -->
+<!-- "transparent-header": makes the header transparent and pulls the banner to top -->
+<!-- "gradient-background-header": applies gradient background to header -->
+<!-- "page-loader-1 ... page-loader-6": add a page loader to the page (more info @components-page-loaders.html) -->
+<body class=" ">
+
+  <!-- scrollToTop -->
+  <!-- ================ -->
+  <div class="scrollToTop circle">
+    <i class="fa fa-angle-up"></i>
+  </div>
+
+  <!-- page wrapper start -->
+  <!-- ================ -->
+  <div class="page-wrapper">
+    <!-- header-container end -->
+
+
+
+    <!-- header-container start -->
+    <div class="header-container">
+      <!-- header-top start -->
+      <!-- classes:  -->
+      <!-- "dark": dark version of header top e.g. class="header-top dark" -->
+      <!-- "colored": colored version of header top e.g. class="header-top colored" -->
+      <!-- ================ -->
+      <div class="header-top dark">
+        <div class="container">
+          <div class="row">
+            <div class="col-3 col-sm-6 col-lg-9">
+              <!-- header-top-first start -->
+              <!-- ================ -->
+              <div class="header-top-first clearfix"></div>
+              <!-- header-top-first end -->
+            </div>
+            <div class="col-9 col-sm-6 col-lg-3">
+
+              <!-- header-top-second start -->
+              <!-- ================ -->
+              <div id="header-top-second" class="clearfix">
+
+                <!-- header top dropdowns start -->
+                <!-- ================ -->
+                <div class="header-top-dropdown text-right">
+
+                  <div class="btn-group">
+                    <a href="./signUpForm.html" class="btn btn-default btn-sm"><i class="fa fa-user pr-2"></i> Sign Up</a>
+                  </div>
+                  <div class="btn-group" id="login">
+                    <button id="header-top-drop-2" type="button" class="btn dropdown-toggle btn-default btn-sm dropdown-toggle--no-caret" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i class="fa fa-lock pr-2"></i> Login
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right dropdown-animation" aria-labelledby="header-top-drop-2">
+                      <li>
+
+
+                        <form class="login-form margin-clear">
+                          <div class="form-group has-feedback">
+                            <label class="control-label">아 이 디</label> <input type="text" id="loginId" class="form-control" placeholder="" name="id"> <i class="fa fa-user form-control-feedback"></i>
+                          </div>
+                          <div class="form-group has-feedback">
+                            <label class="control-label">비밀번호</label> <input type="password" id="loginPw" class="form-control" placeholder="" name="pw"> <i class="fa fa-lock form-control-feedback"></i>
+                          </div>
+                          <button type="button" id="login-btn" class="btn btn-gray btn-sm">로 그 인</button>
+
+                          <ul class='pagination'>
+                            <!--
+                                          <li><a href="#" class="btn btn-default btn-sm">아이디
+                                                찾기</a></li>
+                                          -->
+                            <li><a href="passwordSearchForm.do" class="btn btn-default btn-sm">비밀번호 찾기</a></li>
+                          </ul>
+
+                        </form>
+                      </li>
+                    </ul>
+                  </div>
+                  <div id="logout" style="display: none;">
+                    <button type="button" id="logInfo" class="btn btn-outline-white text-danger p-0" style="background-color: black"></button>
+                    <button type="button" id="logout" class="btn btn-outline-white text-danger p-0">LogOut</button>
+                  </div>
+
+                </div>
+                <!--  header top dropdowns end -->
+              </div>
+              <!-- header-top-second end -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- header-top end -->
+
+      <!-- header start -->
+      <!-- classes:  -->
+      <!-- "fixed": enables fixed navigation mode (sticky menu) e.g. class="header fixed clearfix" -->
+      <!-- "fixed-desktop": enables fixed navigation only for desktop devices e.g. class="header fixed fixed-desktop clearfix" -->
+      <!-- "fixed-all": enables fixed navigation only for all devices desktop and mobile e.g. class="header fixed fixed-desktop clearfix" -->
+      <!-- "dark": dark version of header e.g. class="header dark clearfix" -->
+      <!-- "centered": mandatory class for the centered logo layout -->
+      <!-- ================ -->
+      <header class="header fixed fixed-desktop clearfix">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-auto hidden-md-down">
+              <!-- header-first start -->
+              <!-- ================ -->
+              <div class="header-first clearfix">
+
+                <!-- logo -->
+                <div id="logo" class="logo">
+                  <a href="./index.html"><img id="logo_img" src="images/logo.jpg" width='150' alt="The SSAFY"></a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-10 ml-auto">
+
+              <!-- header-second start -->
+              <!-- ================ -->
+              <div class="header-second clearfix">
+
+                <!-- main-navigation start -->
+                <!-- classes: -->
+                <!-- "onclick": Makes the dropdowns open on click, this the default bootstrap behavior e.g. class="main-navigation onclick" -->
+                <!-- "animated": Enables animations on dropdowns opening e.g. class="main-navigation animated" -->
+                <!-- ================ -->
+                <div class="main-navigation main-navigation--mega-menu  animated">
+                  <nav class="navbar navbar-expand-lg navbar-light p-0">
+                    <div class="navbar-brand clearfix hidden-lg-up">
+
+                      <!-- logo -->
+                      <div id="logo-mobile" class="logo">
+                        <a href="./index.html"><img id="logo-img-mobile" src="images/logo.jpg" width='150' alt="The SSAFY"></a>
+
+                      </div>
+
+                    </div>
+
+                    <!-- header dropdown buttons -->
+                    <div class="header-dropdown-buttons hidden-lg-up p-0 ml-auto mr-3">
+                      <div class="btn-group">
+                        <button type="button" class="btn dropdown-toggle dropdown-toggle--no-caret" id="header-drop-3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="fa fa-search"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-right dropdown-animation" aria-labelledby="header-drop-3">
+                          <li>
+                            <form role="search" class="search-box margin-clear">
+                              <div class="form-group has-feedback">
+                                <input type="text" class="form-control" placeholder="Search"> <i class="fa fa-search form-control-feedback"></i>
+                              </div>
+                            </form>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <!-- header dropdown buttons end -->
+
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse-1" aria-controls="navbar-collapse-1" aria-expanded="false" aria-label="Toggle navigation">
+                      <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbar-collapse-1">
+                      <ul class="navbar-nav ml-xl-auto">
+                        <li class="nav-item dropdown  mega-menu mega-menu--wide"><a href="./noticeList.html" class="nav-link " id="first-dropdown" aria-haspopup="true" aria-expanded="false">공지사항</a></li>
+                        <li class="nav-item dropdown mega-menu mega-menu--wide">
+                          <!-- <a href="foodBestList.do?id=n" class="nav-link dropdown-toggle" id="second-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">영양 정보</a> --> <a href="./news.html" class="nav-link" id="second-dropdown" aria-haspopup="true" aria-expanded="false">오늘의 뉴스</a>
+                        </li>
+
+
+
+                      </ul>
+                      <!-- main-menu end -->
+                    </div>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- header end -->
+    </div>
+
+    <!-- header-second end -->
+
+
+    <div class="dark-bg section">
+      <div class="container-fluid">
+        <!-- filters start -->
+        <div class="sorting-filters text-center mb-20 d-flex justify-content-center">
+          <form class="form-inline" id="frm" action="./searchRecentHouseDeal.html">
+            <!-- <input type="hidden" id="code"  name="code" value="code"/> -->
+            <div class="form-group md">
+              <select class="form-control" name="city" id="city">
+                <option value="">선택</option>
+              </select>
+            </div>
+            <div class="form-group md-1">
+              <select class="form-control" name="gu" id="gu">
+                <option value="">선택</option>
+              </select>
+            </div>
+            <div class="form-group md-1">
+              <select class="form-control" name="dong" id="dong">
+                <option value="">선택</option>
+              </select>
+            </div>
+          </form>
+        </div>
+        <!-- filters end -->
+      </div>
+    </div>
+    <!-- main-container start -->
+    <!-- ================ -->
+    <section class="main-container">
+      <div class="container">
+        <div class="row">
+
+          <!-- main start -->
+          <!-- ================ -->
+          <div class="main col-lg-8 order-lg-2 ml-xl-auto">
+
+            <!-- page-title start -->
+            <!-- ================ -->
+            <div class="row grid-space-10">
+              <div class='col-12 justify-content-center' id="map" style="width: 400px; height: 600px"></div>
+            </div>
+          </div>
+          <!-- main end -->
+
+          <!-- sidebar start -->
+          <!-- ================ -->
+          <aside class="col-lg-3 order-lg-1">
+            <div class="sidebar">
+              <div class="block clearfix" id='houseInfo'>
+                <h3 class="title">거래 정보</h3>
+                <div class="separator-2"></div>
+
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5512094,126.9751691,17);'>뉴후암</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 27,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 40.99</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 8. 25
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5491552,126.9788322,17);'>명남아띠팰리스</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 69,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 76.27</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 1. 12
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.55121870000001,126.9762396,17);'>브라운스톤남산</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 133,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 168.41</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 11. 12
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5493916,126.9755414,17);'>삼안리치10차</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 84,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 88.71</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 9. 27
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5482831,126.9743695,17);'>삼안리치8차</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 86,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 83.97</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 12. 3
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5493644,126.9802078,17);'>신주에지앙</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 64,900만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 90.2</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 11. 12
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.549795,126.9778016,17);'>신후암</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 30,200만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 61.85</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 10. 24
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5496737,126.97909,17);'>프리마베라빌</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 78,500만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 148.29</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 3. 30
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5485522,126.9791166,17);'>화인</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 81,500만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 137.37</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 9. 9
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.549149,126.9780096,17);'>후암</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 62,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 84.11</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 11. 11
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5522206,126.9770713,17);'>후암맨션</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 38,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 72.13</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 4. 10
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5518011,126.9757608,17);'>후암미주</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 74,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 63.44</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 11. 16
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+                <div class="media margin-clear">
+                  <div class="media-body">
+                    <h4>
+                      <a href='javascript:moveMap(37.5493423,126.9783793,17);'>힐튼빌리지2차</a>
+                    </h4>
+                    <h6 class="media-heading" id='deal'>거래금액 : 85,000만원</h6>
+                    <h6 class="media-heading" id='deal'>면적: 154.33</h6>
+                    <p class="small margin-clear">
+                      <i class="fa fa-calendar pr-10"></i></i>2019. 9. 27
+                    </p>
+                  </div>
+                </div>
+                <hr>
+
+              </div>
+            </div>
+          </aside>
+          <!-- sidebar end -->
+        </div>
+      </div>
+    </section>
+    <!-- main-container end -->
+
+    <!-- main-container end -->
+
+    <!-- footer start (Add "dark" class to #footer in order to enable dark footer) -->
+    <!-- ================ -->
+    <footer id="footer" class="clearfix ">
+
+      <!-- .footer start -->
+      <!-- ================ -->
+      <div class="footer">
+        <div class="container">
+          <div class="footer-inner">
+            <div class="row">
+              <div class="col-md-1">
+                <div class="footer-content">
+                  <img alt="" src="images/logo.png" width="150">
+                </div>
+              </div>
+              <div class="col-md-8">
+                <div class="footer-content">
+                  <h2 class="title">Find Us</h2>
+                  <div class="separator-2"></div>
+                  <ul class="list-icons">
+                    <li><i class="fa fa-map-marker pr-2 text-default"></i>(SSAFY) 서울시 강남구 테헤란로 멀티스퀘어</li>
+                    <li><i class="fa fa-phone pr-2 text-default"></i> 1544-9001</li>
+                    <li><a href="#"><i class="fa fa-envelope-o pr-2"></i>admin@ssafy.com</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- .footer end -->
+
+      <!-- .subfooter start -->
+      <!-- ================ -->
+      <div class="subfooter">
+        <div class="container">
+          <div class="subfooter-inner">
+            <div class="row">
+              <div class="col-md-12">
+                <p class="text-center">Copyright by SSAFY. All rights reserved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- .subfooter end -->
+
+    </footer>
+    <!-- footer end -->
+  </div>
+  <!-- page-wrapper end -->
+
+  <!-- JavaScript files placed at the end of the document so the pages load faster -->
+  <!-- ================================================== -->
+  <!-- Jquery and Bootstap core js files -->
+  <script src="plugins/jquery.min.js"></script>
+  <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+  <!-- Isotope javascript -->
+  <script src="plugins/isotope/imagesloaded.pkgd.min.js"></script>
+  <script src="plugins/isotope/isotope.pkgd.min.js"></script>
+
+  <!-- Magnific Popup javascript -->
+  <script src="plugins/magnific-popup/jquery.magnific-popup.min.js"></script>
+  <!-- Appear javascript -->
+  <script src="plugins/waypoints/jquery.waypoints.min.js"></script>
+  <script src="plugins/waypoints/sticky.min.js"></script>
+  <!-- Count To javascript -->
+  <script src="plugins/countTo/jquery.countTo.js"></script>
+  <!-- Slick carousel javascript -->
+  <script src="plugins/slick/slick.min.js"></script>
+  <!-- Initialization of Plugins -->
+  <script src="js/template.js"></script>
+  <!-- Custom Scripts -->
+
+
+</body>
+</html>

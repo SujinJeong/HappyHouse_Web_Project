@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="HappyHouseProject_Java_2_서울_9_정수진_손현식">
+        <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <property name="context-root" value="hp"/>
+        <property name="java-output-path" value="/HappyHouseProject_Java_2_서울_9_정수진_손현식/build/classes"/>
+    </wb-module>
+</project-modules>
