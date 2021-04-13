@@ -3,8 +3,8 @@
 - **부동산거래(주택/아파트 매매와 월세) 웹서비스**  
     *- 부동산 거래 외 주변 상권 정보, 날씨정보, 환경정보 등 다양한 기능 제공 -*
 
-- **사용자 요구사항**
-<img src="IMG/usecase.JPG" width="70%"></img>
+- **사용자 요구사항**  
+<img src="IMG/usecase.JPG" width="50%"></img>
     
 
 ## 개발환경
@@ -18,20 +18,20 @@
 # 기본 UI
 
 - **회원가입**  
-<img src="IMG/회원가입 화면.png" width="70%"></img>
+<img src="IMG/회원가입 화면.png" width="60%"></img>
 
-- **로그인 완료 및 메인**
-<img src="IMG/로그인 완료 및 메인화면.png" width="70%"></img>
+- **로그인 완료 및 메인**  
+<img src="IMG/로그인 완료 및 메인화면.png" width="60%"></img>
 
-- **카테고리(시, 군, 구) 선택**
-<img src="IMG/카테고리 선택 화면.png" width="70%"></img>
+- **카테고리(시, 군, 구) 선택**  
+<img src="IMG/카테고리 선택 화면.png" width="60%"></img>
 
-- **마커 선택시 확대 및 최저가**
-<img src="IMG/마커 선택시 확대 및 최저가.png" width="70%"></img>
+- **마커 선택시 확대 및 최저가**  
+<img src="IMG/마커 선택시 확대 및 최저가.png" width="60%"></img>
 
 
 ## ER DIAGRAM (보완중)
-<img src="IMG/Happy_House_DB.png" width="70%"></img>
+<img src="IMG/HappyHouse_DB.png" width="60%"></img>
 
 
 ## 구현스택
