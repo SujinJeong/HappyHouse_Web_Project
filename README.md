@@ -33,6 +33,9 @@
 ## :open_file_folder: ER DIAGRAM (보완중)
 <img src="IMG/HappyHouse_DB.png" width="60%"></img>
 
+## 👮 : API 문서 (개발중)
+https://www.notion.so/HappyHouse-API-83bbf191abae40e78ba431e37980f842
+
 
 ## :1234: 구현스택
 
