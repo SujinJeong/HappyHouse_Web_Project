@@ -37,13 +37,14 @@
 https://www.notion.so/HappyHouse-API-83bbf191abae40e78ba431e37980f842
 
 
-## :1234: 구현스택
+## :1234: 구현단계
 
 1. 기본 JAVA 코드 구현
 2. FRONTEND 설계
 3. DB 설계
 4. MVC PATTERN으로 구현
 5. DB 연동 및 MVC 확대
+6. Spring Boot 변경, FE Vue.js 적용, JPA + JWT + Spring Security 적용
 
 ## :round_pushpin: 프로젝트 구조
 - **Model-View-Controller구조 FLOW**  
